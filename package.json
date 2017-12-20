@@ -1,14 +1,15 @@
 {
   "name": "node-sftp-server",
-  "version": "0.3.0",
+  "version": "0.3.0.1",
   "description": "Node.js SFTP Server bindings to implement your own SFTP Server",
   "main": "node-sftp-server.js",
+  "engines": { "node": ">=4.5.0" },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/BriteVerify/node-sftp-server.git"
+    "url": "git+ssh://git@github.com/mvtm-dn/node-sftp-server.git"
   },
   "keywords": [
     "sftp",
@@ -16,7 +17,8 @@
   ],
   "author": "Brady Wetherington <brady@briteverify.com>",
   "contributors": [
-    "Jonathan Yarbor <jon@nodecraft.com> (https://nodecraft.com)"
+    "Jonathan Yarbor <jon@nodecraft.com> (https://nodecraft.com)",
+    "Vasyl Moskalov <mvtm.dn@gmail.com>"
   ],
   "license": "ISC",
   "dependencies": {
@@ -25,7 +27,7 @@
     "tmp": "^0.0.30"
   },
   "bugs": {
-    "url": "https://github.com/BriteVerify/node-sftp-server/issues"
+    "url": "https://github.com/mvtm-dn/node-sftp-server/issues"
   },
-  "homepage": "https://github.com/BriteVerify/node-sftp-server#readme"
+  "homepage": "https://github.com/mvtm-dn/node-sftp-server#readme"
 }

@@ -274,15 +274,22 @@ var SFTPSession = (function(superClass) {
     if (EventEmitter.listenerCount(this, "realpath")) {
       callback = (function(_this) {
         return function(name) {
-          return _this.sftpStream.name(reqid, {
-            filename: name,
-            longname: "-rwxrwxrwx 1 foo foo 3 Dec 8 2009 " + name,
-            attrs: {}
-          });
+          if (Object.prototype.toString.call(name) === "[object String]") {
+            return _this.sftpStream.name(reqid, {
+              filename: name,
+              longname: "-rwxrwxrwx 1 foo foo 3 Dec 8 2009 " + name,
+              attrs: {}
+            });
+          }
+          else {
+            return _this.sftpStream.name(reqid,name);
+          }
         };
       })(this);
       return this.emit("realpath", path, callback);
-    } else {
+    } 
+    else {
+      path=lib_path.normalize(path);
       return this.sftpStream.name(reqid, {
         filename: path,
         longname: path,

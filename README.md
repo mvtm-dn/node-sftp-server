@@ -1,6 +1,8 @@
 
 # node-sftp-server
 
+A small derivative from original work by [@BriteVerify](https://github.com/BriteVerify) - [node-sftp-server](https://github.com/BriteVerify/node-sftp-server).
+
 A simple interface to be able to implement an SFTP Server using Node.js. Based 
 on excellent work by [@mscdex](https://github.com/mscdex) - [ssh2](https://github.com/mscdex/ssh2) and [ssh2-streams](https://github.com/mscdex/ssh2-streams). Without
 which none of this would be possible.
@@ -14,10 +16,11 @@ The easiest way to get the hang of this library is probably to look at the
 `server_example.js` to start with, until this documentation gets more fully
 fleshed-out.
 
+
 # Installation
 
 ```
-npm install --save node-sftp-server
+npm install --save https://github.com/mvtm-dn/node-sftp-server.git
 ```
 
 # Usage
@@ -224,3 +227,8 @@ use to refuse the request -
 - `responder.bad_message()` - protocol error; bad message (unusual)
 - `responder.unsupported()` - operation not supported
 - `responder.ok()` - success
+
+## Improvements
+`.on("readdir",function (path,directory_emitter) { })` - on a directory listing attempt, the directory_emitter a `responder`
+now allows you as a parameter send an array of {name:'name',longname:'longname',attr:{}} objects to increase readdir performance.
+
