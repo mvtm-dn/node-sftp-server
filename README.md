@@ -232,4 +232,6 @@ use to refuse the request -
 `.on("realpath",function (path,callback) { })` as a callback parameters you can place not only filename, but fully defined {name:'name',longname:'longname',attr:{}}
 `.on("readdir",function (path,directory_emitter) { })` - on a directory listing attempt, the directory_emitter a `responder`
 function now accept as parameter fully qualified name object like `{name:'name',longname:'longname',attr:{}}` or even array of this type of objects
+`.on("writefile",function (path,readable_stream) { })` - you can abort uploading operation from server by `readable_stream.destroy("Access denied")`
+ or by `readable_stream.push(null)` if node.js version is smaller, than 8.0.0.
 

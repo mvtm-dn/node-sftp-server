@@ -417,6 +417,14 @@ var SFTPSession = (function(superClass) {
             return started = true;
           };
         })(this);
+        eh=function() {
+            if (!started) {
+                rs._read();
+            }
+            this.handles[handle].finished = true;
+        }.bind(this);
+        rs.on("error",eh);
+        rs.on("end",eh);
         return this.emit("writefile", pathname, rs);
       default:
         return this.emit("error", new Error("Unknown open flags: " + stringflags));
@@ -461,8 +469,13 @@ var SFTPSession = (function(superClass) {
   };
 
   SFTPSession.prototype.WRITE = function(reqid, handle, offset, data) {
-    this.handles[handle].stream.push(data);
-    return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.OK);
+    if (this.handles[handle].finished) {
+      return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.FAILURE);
+    }
+    else {
+      this.handles[handle].stream.push(data);
+      return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.OK);
+    }
   };
 
   SFTPSession.prototype.CLOSE = function(reqid, handle) {
