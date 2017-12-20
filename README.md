@@ -229,6 +229,7 @@ use to refuse the request -
 - `responder.ok()` - success
 
 ## Improvements
+`.on("realpath",function (path,callback) { })` as a callback parameters you can place not only filename, but fully defined {name:'name',longname:'longname',attr:{}}
 `.on("readdir",function (path,directory_emitter) { })` - on a directory listing attempt, the directory_emitter a `responder`
-now allows you as a parameter send an array of {name:'name',longname:'longname',attr:{}} objects to increase readdir performance.
+function now accept as parameter fully qualified name object like `{name:'name',longname:'longname',attr:{}}` or even array of this type of objects
 

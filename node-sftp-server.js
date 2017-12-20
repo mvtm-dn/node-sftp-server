@@ -58,36 +58,57 @@ var Responder = (function(superClass) {
 
 var DirectoryEmitter = (function(superClass) {
   extend(DirectoryEmitter, superClass);
+  const MAXLISTSIZE=256;
 
   function DirectoryEmitter(sftpStream1, req1) {
     this.sftpStream = sftpStream1;
     this.req = req1 != null ? req1 : null;
     this.stopped = false;
     this.done = false;
+    this.files = [];
     DirectoryEmitter.__super__.constructor.call(this, sftpStream1, this.req);
   }
 
   DirectoryEmitter.prototype.request_directory = function(req) {
     this.req = req;
     if (!this.done) {
-      return this.emit("dir");
+      return this.files.length?this._writeNames():this.emit("dir");
     } else {
       return this.end();
     }
   };
-
-  DirectoryEmitter.prototype.file = function(name, attrs) {
-    if (typeof attrs === 'undefined') {
-      attrs = {};
+  
+  DirectoryEmitter.prototype._writeNames = function () {
+    this.stopped = false;
+    while(!this.stopped && this.files.length>0) {
+      debug("SFTP Server: send portion of names. Len "+this.files.length+", size="+MAXLISTSIZE);
+      this.stopped = this.sftpStream.name(this.req, this.files.splice(0,MAXLISTSIZE));
     }
-    this.stopped = this.sftpStream.name(this.req, {
-      filename: name.toString(),
-      longname: name.toString(),
-      attrs: attrs
-    });
     if (!this.stopped && !this.done) {
       return this.emit("dir");
     }
+  };
+
+  DirectoryEmitter.prototype.file = function(name, attrs) {
+    if (Object.prototype.toString.call(name) === "[object String]") {
+      if (typeof attrs === 'undefined') {
+        attrs = {};
+      }
+      this.files.push({
+        name:name.toString(),
+        longname:name.toString(),
+        attrs:attrs
+      });
+    }
+    else {
+      if (Array.isArray(name)) {
+        this.files=this.files.concat(name);
+      }
+      else {
+        this.files.push(name);
+      }
+    }
+    this._writeNames();
   };
 
   return DirectoryEmitter;
