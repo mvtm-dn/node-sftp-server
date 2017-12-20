@@ -375,7 +375,7 @@ var SFTPSession = (function(superClass) {
   };
 
   SFTPSession.prototype.OPEN = function(reqid, pathname, flags, attrs) {
-    var handle, rs, started, stringflags, ts;
+    var handle, rs, started, stringflags, ts, eh;
     stringflags = SFTP.flagsToString(flags);
     switch (stringflags) {
       case "r":
