@@ -382,7 +382,7 @@ var SFTPSession = (function(superClass) {
         // Create a temporary file to hold stream contents.
         var options = {};
         if (SFTPServer.options.temporaryFileDirectory) options.dir = SFTPServer.options.temporaryFileDirectory;
-        return tmp.file(options, function (err, tmpPath, fd) {
+        return tmp.file(options, function (err, tmpPath, fd, cleanupCallback) {
           if (err) throw err;
           handle = this.fetchhandle();
           this.handles[handle] = {
@@ -390,7 +390,8 @@ var SFTPSession = (function(superClass) {
             path: pathname,
             finished: false,
             tmpPath: tmpPath,
-            tmpFile: fd
+            tmpFile: fd,
+            cleanupCallback: cleanupCallback
           };
           var writestream = fs.createWriteStream(tmpPath);
           writestream.on("finish", function () {
@@ -487,6 +488,13 @@ var SFTPSession = (function(superClass) {
           delete this.handles[handle];
           return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.OK);
         case "READ":
+          if (this.handles[handle].cleanupCallback) {
+            try{
+              this.handles[handle].cleanupCallback();
+            } catch (e) {
+              console.error('Remove temporary file problem -',e);
+            }
+          }
           delete this.handles[handle];
           return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.OK);
         case "WRITE":
