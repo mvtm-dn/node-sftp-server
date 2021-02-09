@@ -394,6 +394,10 @@ var SFTPSession = (function(superClass) {
             cleanupCallback: cleanupCallback
           };
           var writestream = fs.createWriteStream(tmpPath);
+          writestream.on("error",function(error) {
+            this.handles[handle].finished=true;
+            this.handles[handle].error=error;
+          })
           writestream.on("finish", function () {
             this.handles[handle].finished = true;
           }.bind(this));
@@ -418,11 +422,12 @@ var SFTPSession = (function(superClass) {
             return started = true;
           };
         })(this);
-        eh=function() {
+        eh=function(error) {
             if (!started) {
                 rs._read();
             }
             this.handles[handle].finished = true;
+            this.handles[handle].error=this.handles[handle].error || !!error;
         }.bind(this);
         rs.on("error",eh);
         rs.on("end",eh);
@@ -495,12 +500,13 @@ var SFTPSession = (function(superClass) {
               console.error('Remove temporary file problem -',e);
             }
           }
+          let error=this.handles[handle].error;
           delete this.handles[handle];
-          return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.OK);
+          return this.sftpStream.status(reqid, error?ssh2.SFTP_STATUS_CODE.FAILURE:ssh2.SFTP_STATUS_CODE.OK);
         case "WRITE":
           this.handles[handle].stream.push(null);
           //delete this.handles[handle]; //can't delete it while it's still going, right?
-          return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.OK);
+          return this.sftpStream.status(reqid, this.handles[handle].error?ssh2.SFTP_STATUS_CODE.FAILURE:ssh2.SFTP_STATUS_CODE.OK);
         default:
           return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.FAILURE);
       }

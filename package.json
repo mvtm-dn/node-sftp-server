@@ -1,6 +1,6 @@
 {
   "name": "node-sftp-server",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Node.js SFTP Server bindings to implement your own SFTP Server",
   "main": "node-sftp-server.js",
   "engines": { "node": ">=4.5.0" },
